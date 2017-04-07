@@ -54,10 +54,10 @@ def get_homedepot_files(month,folder_path):
             for key,dict_list in product.items():
             #for key,value in dict_list.items():
             #attrs.append(dict_list[url])
-            try:
-                writer.writerow([key,dict_list['url'],dict_list['price'],dict_list['timestamp'],dict_list['section'],dict_list['category']])
-            except KeyError:
-                continue
+                try:
+                    writer.writerow([key,dict_list['url'],dict_list['price'],dict_list['timestamp'],dict_list['section'],dict_list['category']])
+                except KeyError:
+                    continue
             
 if __name__ == "__main__":
     month_val = sys.argv[1]
