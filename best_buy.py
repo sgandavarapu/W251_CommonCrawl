@@ -26,6 +26,7 @@ def get_bestbuy_files(month,folder_path):
                 if record['url'].split('/')[3] == 'site': ##product page for Best Buy
 
                     response = get_cc_record(record)
+                    parser = BeautifulSoup(response, "lxml")
 
                     if parser.find_all("div", class_="item-price") != []:
                         product_name = parser.find("title").renderContents()
