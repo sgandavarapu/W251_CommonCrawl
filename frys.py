@@ -31,11 +31,14 @@ def get_frys_files(month,folder_path):
                 if len(price_regex) > 0:
                     product_name = parser.find("meta", property="og:title")['content']
                     price = price_regex[0]
-                    product[product_name] = {
-                        'price': parser.find('input', {'id': 'ciItemPrice'}).get('value'),
-                        'url': record['url'],
-                        'timestamp': record['timestamp']
-                        }
+                    try:
+                        product[product_name] = {
+                            'price': parser.find('input', {'id': 'ciItemPrice'}).get('value'),
+                            'url': record['url'],
+                            'timestamp': record['timestamp']
+                            }
+                    except:
+                        continue
 
         with open(each_file[:-3]+'_processed_products.csv','wb') as csv_file:
             writer = csv.writer(csv_file)
