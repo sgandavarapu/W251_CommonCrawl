@@ -5,7 +5,6 @@ import StringIO
 import gzip
 from bs4 import BeautifulSoup
 import sys
-import gzip
 import re
 import glob
 import csv
@@ -43,11 +42,8 @@ def get_homedepot_files(month,folder_path):
                             # What we have now is just the WARC response, formatted:
                             try :
                                 data = f.read()
-                            except:
-                                resp = requests.get(prefix + record['filename'], headers={'Range': 'bytes={}-{}'.format(offset, offset_end)})
-
-                                # The page is stored compressed (gzip) to save space
-                                # We can extract it using the GZIP library
+                            except: ## trying again
+                                resp = requests.get(prefix + record['filename'], headers={'Range': 'bytes={}-{}'.format(offset, offset_end)})                              
                                 raw_data = StringIO.StringIO(resp.content)
                                 f = gzip.GzipFile(fileobj=raw_data)
                                 data = f.read()
