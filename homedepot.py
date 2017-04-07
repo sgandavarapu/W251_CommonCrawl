@@ -5,6 +5,7 @@ import StringIO
 import gzip
 from bs4 import BeautifulSoup
 import sys
+import gzip
 import re
 import glob
 import csv
@@ -14,7 +15,7 @@ def get_homedepot_files(month,folder_path):
     all_files = glob.glob(folder_path+month+'-homedepot*.gz')
     for each_file in all_files:
         print each_file
-        out_file = each_file[:-3]+'_processed_products.csv'
+        #out_file = each_file[:-3]+'_processed_products.csv'
         product = {}
 
         with gzip.GzipFile(each_file,'r') as data_file:
@@ -42,8 +43,11 @@ def get_homedepot_files(month,folder_path):
                             # What we have now is just the WARC response, formatted:
                             try :
                                 data = f.read()
-                            except: ## trying again
-                                resp = requests.get(prefix + record['filename'], headers={'Range': 'bytes={}-{}'.format(offset, offset_end)})                              
+                            except:
+                                resp = requests.get(prefix + record['filename'], headers={'Range': 'bytes={}-{}'.format(offset, offset_end)})
+
+                                # The page is stored compressed (gzip) to save space
+                                # We can extract it using the GZIP library
                                 raw_data = StringIO.StringIO(resp.content)
                                 f = gzip.GzipFile(fileobj=raw_data)
                                 data = f.read()
@@ -77,15 +81,19 @@ def get_homedepot_files(month,folder_path):
                                         product[product_name]['category'] = category
                                     except:
                                         pass
-        with open(out_file,'wb') as csv_file:
+        with open(each_file[:-3]+'_processed_products.csv','wb') as csv_file:
             writer = csv.writer(csv_file)
-            attrs=[]
-            for product,dict_list in product.items():
-                for key,value in dict_list.items():
-                        attrs.append(dict_list[key])
-                writer.writerow([product]+attrs)
+	    attrs=[]
+            for key,dict_list in product.items():
+		#for key,value in dict_list.items():
+		#attrs.append(dict_list[url])
+		try:
+			writer.writerow([key,dict_list['url'],dict_list['price'],dict_list['timestamp'],dict_list['section'],dict_list['category']])
+		except KeyError:
+			continue
 
 if __name__ == "__main__":
     month_val = sys.argv[1]
     input_file_path = sys.argv[2]
     get_homedepot_files(month_val,input_file_path)
+
