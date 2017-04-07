@@ -28,8 +28,8 @@ def get_bestbuy_files(month,folder_path):
                     response = get_cc_record(record)
 
                     if parser.find_all("div", class_="item-price") != []:
-                    product_name = parser.find("title").renderContents()
-                    product[product_name] = {
+                        product_name = parser.find("title").renderContents()
+                        product[product_name] = {
                         'url': record['url'],
                         'price': parser.find("div", class_="item-price").text.replace('\n', ''),
                         'timestamp': record['timestamp']
