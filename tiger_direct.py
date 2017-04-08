@@ -23,9 +23,12 @@ def get_tigerdirect_files(month,folder_path):
                 line = data_file.readline()
                 record = json.loads(line)
 
-                response = get_cc_record(record)
+                try:
+                    response = get_cc_record(record)
+                    parser = BeautifulSoup(response, "lxml")
+                except ConnectionError as e: 
+                    parser = 'no response'
 
-            	parser = BeautifulSoup(response, "lxml")
                 if parser.find("meta",  itemprop="price") != None:
                     product_name = parser.find("title").renderContents()
                     product_name = re.sub(' at TigerDirect.com', '', product_name)

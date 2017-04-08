@@ -25,8 +25,11 @@ def get_bestbuy_files(month,folder_path):
         
                 if record['url'].split('/')[3] == 'site': ##product page for Best Buy
 
-                    response = get_cc_record(record)
-                    parser = BeautifulSoup(response, "lxml")
+                    try:
+                        response = get_cc_record(record)
+                        parser = BeautifulSoup(response, "lxml")
+                    except ConnectionError as e: 
+                        parser = 'no response'
 
                     if parser.find_all("div", class_="item-price") != []:
                         product_name = parser.find("title").renderContents()
@@ -42,14 +45,14 @@ def get_bestbuy_files(month,folder_path):
                                 category = (re.findall('(?<=category:)(.*?)(?=,)', line)[0]).strip()
                                 category = re.sub("\'", '', category)
                                 product[product_name]['category'] = category
-                            except:
-                                pass
+                            except KeyError:
+                                continue
                             try:
                                 subcategory = (re.findall('(?<=subcategory:)(.*?)(?=,)', line)[0]).strip()
                                 subcategory = re.sub("\'", '', subcategory)
                                 product[product_name]['subcategory'] = subcategory
-                            except:
-                                pass
+                            except KeyError:
+                                continue
                                     
         with open(each_file[:-3]+'_processed_products.csv','wb') as csv_file:
             writer = csv.writer(csv_file)

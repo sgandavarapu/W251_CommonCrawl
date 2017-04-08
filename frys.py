@@ -23,9 +23,11 @@ def get_frys_files(month,folder_path):
                 line = data_file.readline()
                 record = json.loads(line)
 
-                response = get_cc_record(record)
-
-            	parser = BeautifulSoup(response, "lxml")
+                try:
+                    response = get_cc_record(record)
+                    parser = BeautifulSoup(response, "lxml")
+                except ConnectionError as e: 
+                    parser = 'no response'
                 
                 price_regex = re.findall('(?<=\$)(.*?)(?=\</label\>)', response)
                 if len(price_regex) > 0:
@@ -37,7 +39,7 @@ def get_frys_files(month,folder_path):
                             'url': record['url'],
                             'timestamp': record['timestamp']
                             }
-                    except:
+                    except KeyError:
                         continue
 
         with open(each_file[:-3]+'_processed_products.csv','wb') as csv_file:
