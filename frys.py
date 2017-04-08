@@ -9,6 +9,7 @@ import sys
 import requests
 from bs4 import BeautifulSoup
 from Get_CC_data import get_cc_record
+from requests.exceptions import ConnectionError
 
 def get_frys_files(month,folder_path):
     #get all files for the given month from the folder 

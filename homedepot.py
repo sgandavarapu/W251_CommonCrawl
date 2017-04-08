@@ -9,6 +9,7 @@ import re
 import glob
 import csv
 from Get_CC_data import get_cc_record
+from requests.exceptions import ConnectionError
 
 def get_homedepot_files(month,folder_path):
     #get all files for the given month from the folder 
@@ -29,7 +30,7 @@ def get_homedepot_files(month,folder_path):
                         parser = BeautifulSoup(response, "lxml")
                     except ConnectionError as e: 
                         parser = 'no response'
-                        
+
                     if parser.find('input', {'id': 'ciItemPrice'}) != None:
                         product_name = parser.find("title").renderContents()
                         product_name = re.sub(' - The Home Depot', '', product_name)
