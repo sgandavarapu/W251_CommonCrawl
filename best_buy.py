@@ -22,8 +22,10 @@ def get_bestbuy_files(month,folder_path):
         with gzip.GzipFile(each_file,'r') as data_file:
             for line in data_file:
                 line = data_file.readline()
-                record = json.loads(line)
-        
+
+                try:
+                    record = json.loads(line)
+
                 if record['url'].split('/')[3] == 'site': ##product page for Best Buy
 
                     try:
@@ -54,7 +56,8 @@ def get_bestbuy_files(month,folder_path):
                                     continue
                     except: 
                         next
-
+                except:
+                    next
         with open(each_file[:-3]+'_processed_products.csv','wb') as csv_file:
             writer = csv.writer(csv_file)
             attrs=[]
