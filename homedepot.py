@@ -28,29 +28,30 @@ def get_homedepot_files(month,folder_path):
                     try:
                         response = get_cc_record(record)
                         parser = BeautifulSoup(response, "lxml")
+                    
+                        if parser.find('input', {'id': 'ciItemPrice'}) != None:
+                            product_name = parser.find("title").renderContents()
+                            product_name = re.sub(' - The Home Depot', '', product_name)
+                            product[product_name] = {
+                                'price': parser.find('input', {'id': 'ciItemPrice'}).get('value'),
+                                'url': record['url'],
+                                'timestamp': record['timestamp']
+                                }
+                            string = re.findall('(?<=\"bcEnsightenData\":)(.*?)(?=},)', response)[0]
+                            #print string
+                            if string is not None:
+                                try:
+                                    section = (re.findall('(?<=\"siteSection\":)(.*?)(?=,)', string)[0])
+                                    category = re.findall('(?<=\"contentCategory\":)(.*?)(?=,)', string)[0]
+                                    section = re.sub('\"', '', section)
+                                    category = re.findall('(?<=\>)(.*?)(?=\")', category)[0]
+                                    product[product_name]['section'] = section
+                                    product[product_name]['category'] = category
+                                except (KeyError,AttributeError) as e:
+                                    continue
+                        
                     except ConnectionError as e: 
                         parser = 'no response'
-
-                    if parser.find('input', {'id': 'ciItemPrice'}) != None:
-                        product_name = parser.find("title").renderContents()
-                        product_name = re.sub(' - The Home Depot', '', product_name)
-                        product[product_name] = {
-                            'price': parser.find('input', {'id': 'ciItemPrice'}).get('value'),
-                            'url': record['url'],
-                            'timestamp': record['timestamp']
-                            }
-                        string = re.findall('(?<=\"bcEnsightenData\":)(.*?)(?=},)', response)[0]
-                        #print string
-                        if string is not None:
-                            try:
-                                section = (re.findall('(?<=\"siteSection\":)(.*?)(?=,)', string)[0])
-                                category = re.findall('(?<=\"contentCategory\":)(.*?)(?=,)', string)[0]
-                                section = re.sub('\"', '', section)
-                                category = re.findall('(?<=\>)(.*?)(?=\")', category)[0]
-                                product[product_name]['section'] = section
-                                product[product_name]['category'] = category
-                            except KeyError:
-                                continue
 
         with open(each_file[:-3]+'_processed_products.csv','wb') as csv_file:
             writer = csv.writer(csv_file)

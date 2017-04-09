@@ -45,8 +45,8 @@ def get_tigerdirect_files(month,folder_path):
                             'category': category,
                             'sub_category': sub_category
                             }
-                        
-                except ConnectionError as e: 
+
+                except ConnectionError as e:
                     parser = 'no response'
 
         with open(each_file[:-3]+'_processed_products.csv','wb') as csv_file:
