@@ -26,36 +26,36 @@ def get_bestbuy_files(month,folder_path):
                 try:
                     record = json.loads(line)
 
-                if record['url'].split('/')[3] == 'site': ##product page for Best Buy
+                    if record['url'].split('/')[3] == 'site': ##product page for Best Buy
 
-                    try:
-                        response = get_cc_record(record)
-                        parser = BeautifulSoup(response, "lxml")
-                    
-                        if parser.find_all("div", class_="item-price") != []:
-                            product_name = parser.find("title").renderContents()
-                            product[product_name] = {
-                            'url': record['url'],
-                            'price': parser.find("div", class_="item-price").text.replace('\n', ''),
-                            'timestamp': record['timestamp']
-                            }
+                        try:
+                            response = get_cc_record(record)
+                            parser = BeautifulSoup(response, "lxml")
                         
-                        for line in re.findall('{(.*?)}', response):
-                            if line[0:8] == 'upc_code':
-                                try:
-                                    category = (re.findall('(?<=category:)(.*?)(?=,)', line)[0]).strip()
-                                    category = re.sub("\'", '', category)
-                                    product[product_name]['category'] = category
-                                except KeyError:
-                                    continue
-                                try:
-                                    subcategory = (re.findall('(?<=subcategory:)(.*?)(?=,)', line)[0]).strip()
-                                    subcategory = re.sub("\'", '', subcategory)
-                                    product[product_name]['subcategory'] = subcategory
-                                except KeyError:
-                                    continue
-                    except: 
-                        next
+                            if parser.find_all("div", class_="item-price") != []:
+                                product_name = parser.find("title").renderContents()
+                                product[product_name] = {
+                                'url': record['url'],
+                                'price': parser.find("div", class_="item-price").text.replace('\n', ''),
+                                'timestamp': record['timestamp']
+                                }
+                            
+                            for line in re.findall('{(.*?)}', response):
+                                if line[0:8] == 'upc_code':
+                                    try:
+                                        category = (re.findall('(?<=category:)(.*?)(?=,)', line)[0]).strip()
+                                        category = re.sub("\'", '', category)
+                                        product[product_name]['category'] = category
+                                    except KeyError:
+                                        continue
+                                    try:
+                                        subcategory = (re.findall('(?<=subcategory:)(.*?)(?=,)', line)[0]).strip()
+                                        subcategory = re.sub("\'", '', subcategory)
+                                        product[product_name]['subcategory'] = subcategory
+                                    except KeyError:
+                                        continue
+                        except: 
+                            next
                 except:
                     next
         with open(each_file[:-3]+'_processed_products.csv','wb') as csv_file:
