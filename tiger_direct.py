@@ -27,25 +27,27 @@ def get_tigerdirect_files(month,folder_path):
                 try:
                     response = get_cc_record(record)
                     parser = BeautifulSoup(response, "lxml")
+                
+
+                    if parser.find("meta",  itemprop="price") != None:
+                        product_name = parser.find("title").renderContents()
+                        product_name = re.sub(' at TigerDirect.com', '', product_name)
+                        ultag = parser.find_all('ul', {'class': 'breadcrumb'})[0]
+                        category = ultag.find_all('li')[0].text
+                        if len(ultag.find_all('li')) > 1:
+                            sub_category = ultag.find_all('li')[1].text
+                        else:
+                            sub_category = ''
+                        product[product_name] = {
+                            'price': parser.find("meta", itemprop="price")['content'],
+                            'url': record['url'],
+                            'timestamp': record['timestamp'],
+                            'category': category,
+                            'sub_category': sub_category
+                            }
+                        
                 except ConnectionError as e: 
                     parser = 'no response'
-
-                if parser.find("meta",  itemprop="price") != None:
-                    product_name = parser.find("title").renderContents()
-                    product_name = re.sub(' at TigerDirect.com', '', product_name)
-                    ultag = parser.find_all('ul', {'class': 'breadcrumb'})[0]
-                    category = ultag.find_all('li')[0].text
-                    if len(ultag.find_all('li')) > 1:
-                        sub_category = ultag.find_all('li')[1].text
-                    else:
-                        sub_category = ''
-                    product[product_name] = {
-                        'price': parser.find("meta", itemprop="price")['content'],
-                        'url': record['url'],
-                        'timestamp': record['timestamp'],
-                        'category': category,
-                        'sub_category': sub_category
-                        }
 
         with open(each_file[:-3]+'_processed_products.csv','wb') as csv_file:
             writer = csv.writer(csv_file)

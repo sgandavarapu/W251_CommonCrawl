@@ -40,7 +40,7 @@ def get_frys_files(month,folder_path):
                             'url': record['url'],
                             'timestamp': record['timestamp']
                             }
-                    except KeyError:
+                    except KeyError,AttributeError:
                         continue
 
         with open(each_file[:-3]+'_processed_products.csv','wb') as csv_file:
