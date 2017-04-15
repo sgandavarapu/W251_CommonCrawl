@@ -56,9 +56,12 @@ def get_tigerdirect_files(month,folder_path):
             #for key,value in dict_list.items():
             #attrs.append(dict_list[url])
                 try:
-                    writer.writerow([key,dict_list['url'],dict_list['price'],dict_list['timestamp'],dict_list['section'],dict_list['category']])
+                    writer.writerow([key,dict_list['url'],dict_list['price'],dict_list['timestamp'],dict_list['category'],dict_list['sub_category']])
                 except KeyError:
                     continue
+
+        with open(each_file[:-3]+'_processed_products.json', 'w') as f:
+            json.dump(product, f, indent=2)
 
 if __name__ == "__main__":
     month_val = sys.argv[1]

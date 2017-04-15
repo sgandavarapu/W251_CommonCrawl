@@ -8,7 +8,7 @@ def get_cc_index(index_cc, domain):
 
     cc_url  = "http://index.commoncrawl.org/CC-MAIN-%s-index?" % index_cc
     cc_url += "url=%s&matchType=domain&output=json" % domain
-b
+
     response = requests.get(cc_url)
 
     if response.status_code == 200:
