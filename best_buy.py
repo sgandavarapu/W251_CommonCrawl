@@ -34,6 +34,7 @@ def get_bestbuy_files(month,folder_path):
                         
                             if parser.find_all("div", class_="item-price") != []:
                                 product_name = parser.find("title").renderContents()
+                                product_name = re.sub(' - Best Buy', '', product_name)
                                 product[product_name] = {
                                 'url': record['url'],
                                 'price': parser.find("div", class_="item-price").text.replace('\n', ''),
@@ -47,13 +48,13 @@ def get_bestbuy_files(month,folder_path):
                                         category = re.sub("\'", '', category)
                                         product[product_name]['category'] = category
                                     except KeyError:
-                                        continue
+                                        category = ''
                                     try:
                                         subcategory = (re.findall('(?<=subcategory:)(.*?)(?=,)', line)[0]).strip()
                                         subcategory = re.sub("\'", '', subcategory)
                                         product[product_name]['subcategory'] = subcategory
                                     except KeyError:
-                                        continue
+                                        subcategory = ''
                         except: 
                             next
                 except:
@@ -65,9 +66,11 @@ def get_bestbuy_files(month,folder_path):
             #for key,value in dict_list.items():
             #attrs.append(dict_list[url])
                 try:
-                    writer.writerow([key,dict_list['url'],dict_list['price'],dict_list['timestamp'],dict_list['section'],dict_list['category']])
+                    writer.writerow([key,dict_list['url'],dict_list['price'],dict_list['timestamp'],dict_list['category'],dict_list['subcategory']])
                 except KeyError:
                     continue
+        with open(each_file[:-3]+'_processed_products.json', 'w') as f:
+            json.dump(product, f, indent=2)
 
 if __name__ == "__main__":
     month_val = sys.argv[1]
