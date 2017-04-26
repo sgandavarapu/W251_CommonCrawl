@@ -4,7 +4,8 @@ import json
 import StringIO
 import gzip
 
-def get_cc_index(index_cc, domain):
+## Helper function. Not used. Instead relied on cc-index-client
+def get_cc_index(index_cc, domain): 
 
     cc_url  = "http://index.commoncrawl.org/CC-MAIN-%s-index?" % index_cc
     cc_url += "url=%s&matchType=domain&output=json" % domain
@@ -20,7 +21,8 @@ def get_cc_index(index_cc, domain):
 
         return record_list
 
-def get_cc_record(record):
+## helper function to extract the response from common crawl
+def get_cc_record(record): 
 
     offset, length = int(record['offset']), int(record['length'])
     offset_end = offset + length - 1
